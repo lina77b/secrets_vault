@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Audit log · SecVault{% endblock %}
+{% block content %}
+<div class="page">
+  <h1>Audit log</h1>
+  <p class="lead">Your own activity, plus everything that happens in workspaces you administer.</p>
+  <div class="panel table-wrap">
+    <table>
+      <thead><tr><th>Time (UTC)</th><th>User</th><th>Action</th><th>Secret</th><th>Details</th></tr></thead>
+      <tbody>
+        {% for log in logs %}
+        <tr>
+          <td>{{ log.timestamp|date:"Y-m-d H:i" }}</td>
+          <td>{{ log.user.username|default:"-" }}</td>
+          <td><span class="badge {{ log.action|lower }}">{{ log.action }}</span></td>
+          <td>{{ log.secret_title }}</td>
+          <td>{{ log.detail }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5">No activity yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Create account · SecVault{% endblock %}
+{% block content %}
+<div class="auth">
+  <div class="auth-brand">{% include "_logo.html" %}SecVault</div>
+  <h1>Create your account</h1>
+  <p class="lead">It takes a few seconds. You get a personal vault straight away.</p>
+  <form method="post">{% csrf_token %}
+    {% include "_fields.html" %}
+    <button class="btn primary block">Create account</button>
+  </form>
+  <p class="switch">Already registered? <a href="{% url 'login' %}">Sign in</a></p>
+</div>
+{% endblock %}

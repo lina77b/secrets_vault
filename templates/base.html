@@ -1,0 +1,37 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  <title>{% block title %}SecVault{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body class="{% if user.is_authenticated %}app{% else %}guest{% endif %}">
+{% if user.is_authenticated %}
+<aside class="sidebar">
+  <a class="brand" href="{% url 'dashboard' %}">{% include "_logo.html" %}SecVault</a>
+  <nav>
+    <a href="{% url 'dashboard' %}" class="{% if request.path == '/' %}active{% endif %}">My vault</a>
+    <p class="nav-title">Workspaces</p>
+    {% for w in my_workspaces %}
+    <a href="{% url 'workspace' w.pk %}" class="{% if request.resolver_match.kwargs.workspace_id == w.pk %}active{% endif %}">{{ w.name }}</a>
+    {% endfor %}
+    <a class="add" href="{% url 'workspace_create' %}">+ New workspace</a>
+  </nav>
+  <nav class="bottom">
+    <a href="{% url 'audit' %}">Audit log</a>
+    <a href="{% url 'password_change' %}">Password</a>
+    <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button>Log out</button></form>
+    <p class="who">Signed in as {{ user.username }}</p>
+  </nav>
+</aside>
+{% endif %}
+<main>
+  {% for message in messages %}<div class="alert {{ message.tags }}">{{ message }}</div>{% endfor %}
+  {% block content %}{% endblock %}
+</main>
+<script src="{% static 'js/app.js' %}" defer></script>
+</body>
+</html>

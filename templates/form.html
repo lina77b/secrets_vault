@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} · SecVault{% endblock %}
+{% block content %}
+<div class="page narrow">
+  <h1>{{ title }}</h1>
+  <form method="post" class="panel">{% csrf_token %}
+    {% include "_fields.html" %}
+    <button class="btn primary">{{ submit }}</button>
+  </form>
+</div>
+{% endblock %}

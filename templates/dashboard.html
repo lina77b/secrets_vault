@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}{% if workspace %}{{ workspace.name }}{% else %}My vault{% endif %} · SecVault{% endblock %}
+{% block content %}
+<div class="page">
+  <header class="page-head">
+    <h1>{% if workspace %}{{ workspace.name }}{% else %}My vault{% endif %}</h1>
+    <div class="actions">
+      {% if workspace %}
+      <a class="btn" href="{% url 'workspace_members' workspace.pk %}">Members</a>
+      <a class="btn primary" href="{% url 'workspace_secret_create' workspace.pk %}">Add secret</a>
+      {% else %}
+      <a class="btn primary" href="{% url 'secret_create' %}">Add secret</a>
+      {% endif %}
+    </div>
+  </header>
+
+  <div class="filters">
+    <a class="chip {% if not current_type %}on{% endif %}" href="?">All</a>
+    {% for key, label in types %}
+    <a class="chip {% if current_type == key %}on{% endif %}" href="?type={{ key }}">{{ label }}</a>
+    {% endfor %}
+  </div>
+
+  <div class="grid">
+    {% for s in secrets %}
+    <article class="card">
+      <div class="card-top">
+        <h2>{{ s.title }}</h2>
+        <span class="badge {{ s.secret_type|lower }}">{{ s.get_secret_type_display }}</span>
+      </div>
+      {% if s.username %}<p class="meta">{{ s.username }}</p>{% endif %}
+      {% if s.url %}<p class="meta"><a href="{{ s.url }}" target="_blank" rel="noopener noreferrer">{{ s.url }}</a></p>{% endif %}
+      {% if s.notes %}<details><summary>Notes</summary><p class="notes">{{ s.notes }}</p></details>{% endif %}
+      <div class="value">
+        <pre class="value-text" id="value-{{ s.pk }}">••••••••••</pre>
+        <div class="value-actions">
+          <button type="button" class="btn small" data-show data-target="value-{{ s.pk }}" data-url="{% url 'secret_reveal' s.pk %}">Show</button>
+          <button type="button" class="btn small" data-copy data-url="{% url 'secret_reveal' s.pk %}">Copy</button>
+        </div>
+      </div>
+      {% if can_manage %}
+      <div class="card-actions">
+        <a href="{% url 'secret_edit' s.pk %}">Edit</a>
+        <form method="post" action="{% url 'secret_delete' s.pk %}" data-confirm="Delete this secret?">{% csrf_token %}
+          <button class="link danger">Delete</button>
+        </form>
+      </div>
+      {% endif %}
+    </article>
+    {% empty %}
+    <div class="empty">
+      <h2>Nothing here yet</h2>
+      <p>Add a password, API key, SSH key or certificate and it will show up here.</p>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
